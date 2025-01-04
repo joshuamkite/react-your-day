@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Cloud, Loader2 } from 'lucide-react';
+import { Cloud, Loader2, Search } from 'lucide-react';
+import WeatherIcon from './WeatherIcon';
 
 interface WeatherData {
     temperature: number;
@@ -13,6 +14,7 @@ interface WeatherData {
     wind_gusts: number;
     is_day: number;
     hour: number;
+    weathercode: number;
 }
 
 interface Location {
@@ -32,12 +34,51 @@ const HistoricalWeather: React.FC<HistoricalWeatherProps> = ({ selectedDate }) =
         lon: -0.1278
     });
     const [locations] = useState<Location[]>([
-        { name: 'London', lat: 51.5074, lon: -0.1278 },
-        { name: 'New York', lat: 40.7128, lon: -74.0060 },
-        { name: 'Tokyo', lat: 35.6762, lon: 139.6503 },
-        { name: 'Sydney', lat: -33.8688, lon: 151.2093 },
-        // Add more preset locations
-    ]);
+        // Europe
+        { name: 'London, UK', lat: 51.5074, lon: -0.1278 },
+        { name: 'Paris, France', lat: 48.8566, lon: 2.3522 },
+        { name: 'Berlin, Germany', lat: 52.5200, lon: 13.4050 },
+        { name: 'Madrid, Spain', lat: 40.4168, lon: -3.7038 },
+        { name: 'Rome, Italy', lat: 41.9028, lon: 12.4964 },
+        { name: 'Amsterdam, Netherlands', lat: 52.3676, lon: 4.9041 },
+        { name: 'Moscow, Russia', lat: 55.7558, lon: 37.6173 },
+        { name: 'Istanbul, Turkey', lat: 41.0082, lon: 28.9784 },
+
+        // North America
+        { name: 'New York, USA', lat: 40.7128, lon: -74.0060 },
+        { name: 'Los Angeles, USA', lat: 34.0522, lon: -118.2437 },
+        { name: 'Chicago, USA', lat: 41.8781, lon: -87.6298 },
+        { name: 'Toronto, Canada', lat: 43.6532, lon: -79.3832 },
+        { name: 'Vancouver, Canada', lat: 49.2827, lon: -123.1207 },
+        { name: 'Mexico City, Mexico', lat: 19.4326, lon: -99.1332 },
+
+        // Asia
+        { name: 'Tokyo, Japan', lat: 35.6762, lon: 139.6503 },
+        { name: 'Beijing, China', lat: 39.9042, lon: 116.4074 },
+        { name: 'Shanghai, China', lat: 31.2304, lon: 121.4737 },
+        { name: 'Hong Kong', lat: 22.3193, lon: 114.1694 },
+        { name: 'Singapore', lat: 1.3521, lon: 103.8198 },
+        { name: 'Seoul, South Korea', lat: 37.5665, lon: 126.9780 },
+        { name: 'Mumbai, India', lat: 19.0760, lon: 72.8777 },
+        { name: 'Dubai, UAE', lat: 25.2048, lon: 55.2708 },
+
+        // Oceania
+        { name: 'Sydney, Australia', lat: -33.8688, lon: 151.2093 },
+        { name: 'Melbourne, Australia', lat: -37.8136, lon: 144.9631 },
+        { name: 'Auckland, New Zealand', lat: -36.8509, lon: 174.7645 },
+
+        // South America
+        { name: 'São Paulo, Brazil', lat: -23.5505, lon: -46.6333 },
+        { name: 'Rio de Janeiro, Brazil', lat: -22.9068, lon: -43.1729 },
+        { name: 'Buenos Aires, Argentina', lat: -34.6037, lon: -58.3816 },
+        { name: 'Lima, Peru', lat: -12.0464, lon: -77.0428 },
+
+        // Africa
+        { name: 'Cairo, Egypt', lat: 30.0444, lon: 31.2357 },
+        { name: 'Cape Town, South Africa', lat: -33.9249, lon: 18.4241 },
+        { name: 'Lagos, Nigeria', lat: 6.5244, lon: 3.3792 },
+        { name: 'Nairobi, Kenya', lat: -1.2921, lon: 36.8219 }
+    ].sort((a, b) => a.name.localeCompare(b.name)));
     const [selectedHour, setSelectedHour] = useState<number>(12);
     const [timezone, setTimezone] = useState<string>('auto');
     const [weather, setWeather] = useState<WeatherData | null>(null);
@@ -59,7 +100,7 @@ const HistoricalWeather: React.FC<HistoricalWeatherProps> = ({ selectedDate }) =
                 `start_date=${formatDate(selectedDate)}&` +
                 `end_date=${formatDate(selectedDate)}&` +
                 `hourly=temperature_2m,apparent_temperature,precipitation,cloud_cover,` +
-                `wind_speed_10m,wind_direction_10m,wind_gusts_10m,is_day&` +
+                `wind_speed_10m,wind_direction_10m,wind_gusts_10m,is_day,weathercode&` +
                 `timezone=${timezone}`
             );
 
@@ -83,7 +124,8 @@ const HistoricalWeather: React.FC<HistoricalWeatherProps> = ({ selectedDate }) =
                 wind_direction: data.hourly.wind_direction_10m[hourIndex],
                 wind_gusts: data.hourly.wind_gusts_10m[hourIndex],
                 is_day: data.hourly.is_day[hourIndex],
-                hour: selectedHour
+                hour: selectedHour,
+                weathercode: data.hourly.weathercode[hourIndex]
             });
         } catch (error: unknown) {
             const message = error instanceof Error ? error.message : 'Failed to load weather data';
@@ -121,25 +163,28 @@ const HistoricalWeather: React.FC<HistoricalWeatherProps> = ({ selectedDate }) =
                 </h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
+                    <div className="col-span-2">
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                             Location
                         </label>
-                        <select
-                            value={`${location.lat},${location.lon}`}
-                            onChange={(e) => {
-                                const [lat, lon] = e.target.value.split(',').map(Number);
-                                const selectedLocation = locations.find(loc => loc.lat === lat && loc.lon === lon);
-                                if (selectedLocation) setLocation(selectedLocation);
-                            }}
-                            className="w-full p-2 border rounded-md"
-                        >
-                            {locations.map((loc) => (
-                                <option key={loc.name} value={`${loc.lat},${loc.lon}`}>
-                                    {loc.name}
-                                </option>
-                            ))}
-                        </select>
+                        <div className="relative">
+                            <Search className="absolute left-2 top-2.5 h-5 w-5 text-gray-400" />
+                            <select
+                                value={`${location.lat},${location.lon}`}
+                                onChange={(e) => {
+                                    const [lat, lon] = e.target.value.split(',').map(Number);
+                                    const selectedLocation = locations.find(loc => loc.lat === lat && loc.lon === lon);
+                                    if (selectedLocation) setLocation(selectedLocation);
+                                }}
+                                className="w-full pl-9 p-2 border rounded-md appearance-none bg-white"
+                            >
+                                {locations.map((loc) => (
+                                    <option key={loc.name} value={`${loc.lat},${loc.lon}`}>
+                                        {loc.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
 
                     <div>
@@ -158,24 +203,6 @@ const HistoricalWeather: React.FC<HistoricalWeatherProps> = ({ selectedDate }) =
                             ))}
                         </select>
                     </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Timezone
-                        </label>
-                        <select
-                            value={timezone}
-                            onChange={(e) => setTimezone(e.target.value)}
-                            className="w-full p-2 border rounded-md"
-                        >
-                            <option value="auto">Auto</option>
-                            <option value="GMT">GMT</option>
-                            <option value="America/New_York">EST</option>
-                            <option value="Europe/London">BST</option>
-                            <option value="Asia/Tokyo">JST</option>
-                            {/* Add more timezones as needed */}
-                        </select>
-                    </div>
                 </div>
             </div>
 
@@ -188,8 +215,13 @@ const HistoricalWeather: React.FC<HistoricalWeatherProps> = ({ selectedDate }) =
                     <div className="text-red-500 text-center p-4">{error}</div>
                 ) : weather ? (
                     <div className="space-y-6">
-                        <div className="text-center mb-4">
-                            <span className="text-sm text-gray-500">
+                        <div className="text-center">
+                            <WeatherIcon
+                                weathercode={weather.weathercode}
+                                isDay={weather.is_day}
+                                size={64}
+                            />
+                            <span className="text-sm text-gray-500 block mt-2">
                                 {`${String(weather.hour).padStart(2, '0')}:00 - ${weather.is_day ? 'Daytime' : 'Nighttime'}`}
                             </span>
                         </div>

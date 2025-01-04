@@ -1,7 +1,7 @@
 // src/utils/dates.ts
 
 export function getWeekday(date: Date): string {
-  let q = date.getDate(); // day of month
+  const q = date.getDate(); // day of month
   let m = date.getMonth() + 1; // month (1-12)
   let y = date.getFullYear();
 

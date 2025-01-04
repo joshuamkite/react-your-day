@@ -1,27 +1,57 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Calendar } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import WikipediaOnThisDay from './WikipediaOnThisDay';
 import HistoricalWeather from './HistoricalWeather';
 import { getWeekday } from '@/utils/dates';
 
+// Import DateSelector with SSR disabled
+const DateSelector = dynamic(() => import('./DateSelector'), { ssr: false });
+
+// Dynamic import for lucide icon to prevent hydration issues
+const DynamicCalendar = dynamic(
+    async () => {
+        const { Calendar } = await import('lucide-react');
+        return Calendar;
+    },
+    { ssr: false }
+);
+
+interface DateInputs {
+    year: string;
+    month: string;
+    day: string;
+}
+
 const HistoricalDashboard: React.FC = () => {
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+    const [dateInputs, setDateInputs] = useState<DateInputs>({
+        year: '',
+        month: '',
+        day: ''
+    });
 
-    const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const date = new Date(e.target.value);
-        if (!isNaN(date.getTime())) {
-            setSelectedDate(date);
+    const handleDatePartChange = (part: keyof DateInputs, value: string) => {
+        const newInputs = { ...dateInputs, [part]: value };
+        setDateInputs(newInputs);
+
+        if (newInputs.year && newInputs.month && newInputs.day) {
+            // Create date in UTC
+            const newDate = new Date(Date.UTC(
+                parseInt(newInputs.year),
+                parseInt(newInputs.month) - 1,
+                parseInt(newInputs.day),
+                12, // Set to noon UTC
+                0,
+                0,
+                0
+            ));
+
+            if (!isNaN(newDate.getTime())) {
+                setSelectedDate(newDate);
+            }
         }
-    };
-
-    const formatDateForInput = (date: Date | null): string => {
-        if (!date) return '';
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
     };
 
     return (
@@ -29,36 +59,29 @@ const HistoricalDashboard: React.FC = () => {
             <div className="max-w-6xl mx-auto px-4">
                 <div className="mb-8 text-center">
                     <h1 className="text-3xl font-bold flex items-center justify-center mb-6">
-                        <Calendar className="mr-2 h-8 w-8" />
+                        <DynamicCalendar className="mr-2 h-8 w-8" />
                         Historical Time Machine
                     </h1>
 
                     <div className="max-w-sm mx-auto mb-6">
-                        <label htmlFor="date-select" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
                             Select a Date
                         </label>
-                        <input
-                            id="date-select"
-                            type="date"
-                            value={formatDateForInput(selectedDate)}
-                            onChange={handleDateChange}
-                            className="w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        <DateSelector
+                            dateInputs={dateInputs}
+                            onDatePartChange={handleDatePartChange}
                         />
                     </div>
 
                     {selectedDate && (
-                        <>
-                            <div className="text-xl font-medium text-gray-600">
-                                {selectedDate.toLocaleDateString('en-US', {
-                                    year: 'numeric',
-                                    month: 'long',
-                                    day: 'numeric'
-                                })}
-                            </div>
-                            <div className="text-sm text-gray-500 mt-1">
-                                {getWeekday(selectedDate)}
-                            </div>
-                        </>
+                        <div className="text-xl font-medium text-gray-600">
+                            {selectedDate.toLocaleDateString('en-US', {
+                                month: 'long',
+                                day: 'numeric',
+                                year: 'numeric',
+                                timeZone: 'UTC'
+                            })} - {getWeekday(selectedDate)}
+                        </div>
                     )}
                 </div>
 
