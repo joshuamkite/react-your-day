@@ -80,7 +80,7 @@ const HistoricalWeather: React.FC<HistoricalWeatherProps> = ({ selectedDate }) =
         { name: 'Nairobi, Kenya', lat: -1.2921, lon: 36.8219 }
     ].sort((a, b) => a.name.localeCompare(b.name)));
     const [selectedHour, setSelectedHour] = useState<number>(12);
-    const [timezone, setTimezone] = useState<string>('auto');
+    const timezone = 'auto';
     const [weather, setWeather] = useState<WeatherData | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>('');
