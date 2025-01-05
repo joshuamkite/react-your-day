@@ -75,13 +75,9 @@ const HistoricalDashboard: React.FC = () => {
                             <li>Historical weather provided by <a href="https://open-meteo.com/" className="text-blue-500 hover:underline">Open Meteo</a></li>
                             <li>Historical events provided by <a href="https://wikimedia.org/" className="text-blue-500 hover:underline">Wikimedia</a></li>
                         </ul>
-                        <p className="mt-3">Select a date to begin your journey through time.</p>
                     </div>
 
                     <div className="max-w-sm mx-auto mb-6">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Select a Date
-                        </label>
                         <DateSelector
                             dateInputs={dateInputs}
                             onDatePartChange={handleDatePartChange}
@@ -107,7 +103,7 @@ const HistoricalDashboard: React.FC = () => {
                     </div>
                 ) : (
                     <div className="text-center text-gray-500 py-12">
-                        Please select a date to view historical information
+                        Select a date to begin your journey through time
                     </div>
                 )}
             </div>
