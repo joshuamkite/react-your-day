@@ -29,7 +29,9 @@ src/
     layout.tsx  # Default layout
 ```
 
-4. Run the development server:
+**Update  `next.config.ts` for local development**
+
+1. Run the development server:
 ```bash
 npm run dev
 ```
@@ -56,6 +58,11 @@ https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/events/{month}/{day}
 - Tailwind CSS
 - Lucide React Icons
 
+## to build
+
+```bash
+npm run build
+```
 
 ## Old defualt
 

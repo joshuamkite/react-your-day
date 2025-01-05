@@ -69,7 +69,7 @@ const WikipediaOnThisDay: React.FC<WikipediaOnThisDayProps> = ({ selectedDate })
       <div className="p-6 border-b">
         <h2 className="text-xl font-bold flex items-center">
           <Calendar className="mr-2 h-6 w-6" />
-          Historical Events
+          Historical Events On This Day
         </h2>
       </div>
 
