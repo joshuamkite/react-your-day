@@ -3,13 +3,19 @@
 A React application that shows historical weather data, weekday and significant events for any date since 1754. Built with Next.js and designed for static site integration.
 
 ## Features
-- Historical weather data for locations worldwide
-- Wikipedia "On This Day" events
+
+- Date selection from 1754 to present
 - Day of week calculation using Zeller's congruence
-- Events grouped by century
+- Historical weather data for locations worldwide including:
+  - Temperature
+  - Precipitation
+  - Cloud cover
+  - Wind conditions
+- Wikipedia "On This Day" events organized by century
 - Links to full Wikipedia articles
-- Responsive design
-- TypeScript support
+- Responsive design for all screen sizes
+- Static site integration ready
+
 
 ## Setup Steps
 
@@ -102,14 +108,3 @@ https://archive-api.open-meteo.com/v1/archive
 - **HistoricalWeather**: Weather data visualization
 - **WikipediaOnThisDay**: Historical events display
 - **WeatherIcon**: Dynamic weather condition icons
-
-## Features in Detail
-- Date selection from 1754 to present
-- Historical weather data including:
-  - Temperature
-  - Precipitation
-  - Cloud cover
-  - Wind conditions
-- Wikipedia events organized by century
-- Responsive design for all screen sizes
-- Static site integration ready
