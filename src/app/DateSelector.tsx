@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 
 interface DateInputs {
     year: string;
@@ -14,6 +14,7 @@ interface DateSelectorProps {
 }
 
 const DateSelector: React.FC<DateSelectorProps> = ({ dateInputs, onDatePartChange }) => {
+    const [yearError, setYearError] = useState<string>('');
     const months = [
         'January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'
@@ -31,6 +32,7 @@ const DateSelector: React.FC<DateSelectorProps> = ({ dateInputs, onDatePartChang
 
     const handleYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
+        setYearError('');
 
         // Allow empty value for clearing the field
         if (value === '') {
@@ -39,62 +41,78 @@ const DateSelector: React.FC<DateSelectorProps> = ({ dateInputs, onDatePartChang
         }
 
         // Only allow numbers
-        if (!/^\d+$/.test(value)) {
+        if (!/^\d*$/.test(value)) {
             return;
         }
 
-        const yearNum = parseInt(value);
-        const currentYear = new Date().getFullYear();
-
-        // Allow typing but restrict final value
+        // Allow typing but limit to 4 digits
         if (value.length <= 4) {
             onDatePartChange('year', value);
-        }
 
-        // If it's a complete year (4 digits) and out of range, reset to empty
-        if (value.length === 4 && (yearNum < 1754 || yearNum > currentYear)) {
-            onDatePartChange('year', '');
+            // Only validate complete years
+            if (value.length === 4) {
+                const yearNum = parseInt(value);
+                const currentYear = new Date().getFullYear();
+
+                // If it's an invalid year, show error message
+                if (yearNum < 1754) {
+                    setYearError('Year must be 1754 or later');
+                    onDatePartChange('year', '');
+                } else if (yearNum > currentYear) {
+                    setYearError(`Year cannot be later than ${currentYear}`);
+                    onDatePartChange('year', '');
+                }
+            }
         }
     };
 
+    const inputClasses = "w-full px-3 py-2 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-white dark:focus:ring-blue-400 dark:placeholder-gray-400";
+
     return (
-        <div className="flex gap-2 justify-center">
-            <select
-                value={dateInputs.day}
-                onChange={(e) => onDatePartChange('day', e.target.value)}
-                className="w-24 px-3 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-                <option value="">Day</option>
-                {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(day => (
-                    <option key={day} value={day}>
-                        {day.toString().padStart(2, '0')}
-                    </option>
-                ))}
-            </select>
+        <div className="space-y-2">
+            <div className="flex gap-2 justify-center">
+                <select
+                    value={dateInputs.day}
+                    onChange={(e) => onDatePartChange('day', e.target.value)}
+                    className={`${inputClasses} w-24`}
+                >
+                    <option value="">Day</option>
+                    {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(day => (
+                        <option key={day} value={day}>
+                            {day.toString().padStart(2, '0')}
+                        </option>
+                    ))}
+                </select>
 
-            <select
-                value={dateInputs.month}
-                onChange={(e) => onDatePartChange('month', e.target.value)}
-                className="w-40 px-3 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-                <option value="">Month</option>
-                {months.map((month, index) => (
-                    <option key={month} value={index + 1}>
-                        {month}
-                    </option>
-                ))}
-            </select>
+                <select
+                    value={dateInputs.month}
+                    onChange={(e) => onDatePartChange('month', e.target.value)}
+                    className={`${inputClasses} w-40`}
+                >
+                    <option value="">Month</option>
+                    {months.map((month, index) => (
+                        <option key={month} value={index + 1}>
+                            {month}
+                        </option>
+                    ))}
+                </select>
 
-            <input
-                type="text"
-                inputMode="numeric"
-                pattern="\d*"
-                maxLength={4}
-                placeholder="Year"
-                value={dateInputs.year}
-                onChange={handleYearChange}
-                className="w-28 px-3 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
+                <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="\d*"
+                    maxLength={4}
+                    placeholder="Year"
+                    value={dateInputs.year}
+                    onChange={handleYearChange}
+                    className={`${inputClasses} w-28`}
+                />
+            </div>
+            {yearError && (
+                <div className="text-red-500 dark:text-red-400 text-sm text-center">
+                    {yearError}
+                </div>
+            )}
         </div>
     );
 };
