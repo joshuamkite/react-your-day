@@ -155,20 +155,20 @@ const HistoricalWeather: React.FC<HistoricalWeatherProps> = ({ selectedDate }) =
     };
 
     return (
-        <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-            <div className="p-6 border-b">
-                <h2 className="text-xl font-bold flex items-center mb-4">
+        <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
+            <div className="p-6 border-b dark:border-gray-700">
+                <h2 className="text-xl font-bold flex items-center mb-4 text-gray-900 dark:text-gray-100">
                     <Cloud className="mr-2 h-6 w-6" />
                     Historical Weather
                 </h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                             Location
                         </label>
                         <div className="relative">
-                            <Search className="absolute left-2 top-2.5 h-5 w-5 text-gray-400" />
+                            <Search className="absolute left-2 top-2.5 h-5 w-5 text-gray-400 dark:text-gray-500" />
                             <select
                                 value={`${location.lat},${location.lon}`}
                                 onChange={(e) => {
@@ -176,7 +176,7 @@ const HistoricalWeather: React.FC<HistoricalWeatherProps> = ({ selectedDate }) =
                                     const selectedLocation = locations.find(loc => loc.lat === lat && loc.lon === lon);
                                     if (selectedLocation) setLocation(selectedLocation);
                                 }}
-                                className="w-full pl-9 p-2 border rounded-md appearance-none bg-white"
+                                className="w-full pl-9 p-2 border rounded-md appearance-none bg-white dark:bg-gray-700 dark:text-gray-300"
                             >
                                 {locations.map((loc) => (
                                     <option key={loc.name} value={`${loc.lat},${loc.lon}`}>
@@ -188,13 +188,13 @@ const HistoricalWeather: React.FC<HistoricalWeatherProps> = ({ selectedDate }) =
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                             Hour
                         </label>
                         <select
                             value={selectedHour}
                             onChange={(e) => setSelectedHour(Number(e.target.value))}
-                            className="w-full p-2 border rounded-md"
+                            className="w-full p-2 border rounded-md bg-white dark:bg-gray-700 dark:text-gray-300"
                         >
                             {Array.from({ length: 24 }, (_, i) => (
                                 <option key={i} value={i}>
@@ -209,10 +209,10 @@ const HistoricalWeather: React.FC<HistoricalWeatherProps> = ({ selectedDate }) =
             <div className="p-6">
                 {loading ? (
                     <div className="flex justify-center items-center h-32">
-                        <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
+                        <Loader2 className="h-8 w-8 animate-spin text-gray-500 dark:text-gray-400" />
                     </div>
                 ) : error ? (
-                    <div className="text-red-500 text-center p-4">{error}</div>
+                    <div className="text-red-500 dark:text-red-400 text-center p-4">{error}</div>
                 ) : weather ? (
                     <div className="space-y-6">
                         <div className="text-center">
@@ -221,53 +221,53 @@ const HistoricalWeather: React.FC<HistoricalWeatherProps> = ({ selectedDate }) =
                                 isDay={weather.is_day}
                                 size={64}
                             />
-                            <span className="text-sm text-gray-500 block mt-2">
+                            <span className="text-sm text-gray-500 dark:text-gray-400 block mt-2">
                                 {`${String(weather.hour).padStart(2, '0')}:00 - ${weather.is_day ? 'Daytime' : 'Nighttime'}`}
                             </span>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
-                            <div className="p-4 bg-gray-50 rounded-lg">
-                                <div className="text-sm text-gray-500">Temperature</div>
-                                <div className="text-2xl font-bold">{Math.round(weather.temperature)}°C</div>
+                            <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <div className="text-sm text-gray-500 dark:text-gray-400">Temperature</div>
+                                <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{Math.round(weather.temperature)}°C</div>
                             </div>
-                            <div className="p-4 bg-gray-50 rounded-lg">
-                                <div className="text-sm text-gray-500">Feels Like</div>
-                                <div className="text-2xl font-bold">{Math.round(weather.apparent_temperature)}°C</div>
+                            <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <div className="text-sm text-gray-500 dark:text-gray-400">Feels Like</div>
+                                <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{Math.round(weather.apparent_temperature)}°C</div>
                             </div>
-                            <div className="p-4 bg-gray-50 rounded-lg">
-                                <div className="text-sm text-gray-500">Precipitation</div>
-                                <div className="text-2xl font-bold">{Math.round(weather.precipitation)} mm</div>
+                            <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <div className="text-sm text-gray-500 dark:text-gray-400">Precipitation</div>
+                                <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{Math.round(weather.precipitation)} mm</div>
                             </div>
-                            <div className="p-4 bg-gray-50 rounded-lg">
-                                <div className="text-sm text-gray-500">Cloud Cover</div>
-                                <div className="text-2xl font-bold">{Math.round(weather.cloud_cover)}%</div>
+                            <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <div className="text-sm text-gray-500 dark:text-gray-400">Cloud Cover</div>
+                                <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{Math.round(weather.cloud_cover)}%</div>
                             </div>
                         </div>
 
                         <div className="space-y-4">
-                            <h3 className="font-semibold text-gray-700">Wind Conditions</h3>
+                            <h3 className="font-semibold text-gray-700 dark:text-gray-300">Wind Conditions</h3>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div className="p-4 bg-gray-50 rounded-lg">
-                                    <div className="text-sm text-gray-500">Wind Speed</div>
-                                    <div className="text-xl font-bold">
+                                <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                    <div className="text-sm text-gray-500 dark:text-gray-400">Wind Speed</div>
+                                    <div className="text-xl font-bold text-gray-900 dark:text-gray-100">
                                         {Math.round(weather.wind_speed)} km/h
-                                        <div className="text-sm font-normal text-gray-500">
+                                        <div className="text-sm font-normal text-gray-500 dark:text-gray-400">
                                             ({Math.round(kmhToMph(weather.wind_speed))} mph)
                                         </div>
                                     </div>
                                 </div>
-                                <div className="p-4 bg-gray-50 rounded-lg">
-                                    <div className="text-sm text-gray-500">Wind Direction</div>
-                                    <div className="text-xl font-bold">
+                                <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                    <div className="text-sm text-gray-500 dark:text-gray-400">Wind Direction</div>
+                                    <div className="text-xl font-bold text-gray-900 dark:text-gray-100">
                                         {getWindDirection(weather.wind_direction)}
                                     </div>
                                 </div>
-                                <div className="p-4 bg-gray-50 rounded-lg">
-                                    <div className="text-sm text-gray-500">Wind Gusts</div>
-                                    <div className="text-xl font-bold">
+                                <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                    <div className="text-sm text-gray-500 dark:text-gray-400">Wind Gusts</div>
+                                    <div className="text-xl font-bold text-gray-900 dark:text-gray-100">
                                         {Math.round(weather.wind_gusts)} km/h
-                                        <div className="text-sm font-normal text-gray-500">
+                                        <div className="text-sm font-normal text-gray-500 dark:text-gray-400">
                                             ({Math.round(kmhToMph(weather.wind_gusts))} mph)
                                         </div>
                                     </div>
