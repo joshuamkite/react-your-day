@@ -1,4 +1,4 @@
-# Historical Day
+# React Your Day
 
 A React application that shows historical weather data, weekday and significant events for any date since 1754. Built with Next.js and designed for static site integration.
 
