@@ -61,26 +61,36 @@ npm run dev
 ```
 The app will be available at http://localhost:3000
 
-## Building for Static Site Integration
+## Building for Production
 
-1. Update `next.config.ts`:
+`next.config.ts` is already set to static export:
 ```typescript
 const nextConfig = {
   output: 'export',
-  basePath: '/historical-day',
   images: {
     unoptimized: true,
   },
-  assetPrefix: '/historical-day',
 };
 ```
 
-2. Build the static output:
+Build the static output:
 ```bash
 npm run build
 ```
 
-The static files will be generated in the `out` directory, ready for integration with a static site generator.
+The static files are generated in the `out` directory.
+
+## Deployment
+
+Deployed to `historical-day.joshuakite.co.uk` as a static website using OpenTofu/Terraform and the [static-website-s3-cloudfront-acm](https://registry.terraform.io/modules/joshuamkite/static-website-s3-cloudfront-acm/aws) module — S3 bucket, CloudFront distribution, ACM certificate, and Route53 record. See `terraform/`.
+
+```bash
+cd terraform
+tofu init
+tofu apply
+```
+
+`tofu apply` builds the app (`npm install && npm run build`), syncs `out/` to S3, and invalidates the CloudFront distribution. Backend state config and domain/zone variables are supplied via a local `terraform.tfvars` (gitignored, not committed since this repo is public).
 
 ## APIs Used
 The app integrates with two external APIs:
