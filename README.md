@@ -6,6 +6,7 @@ A React application that shows historical weather data, weekday and significant 
 
 - Date selection for any year
 - Day of week calculation via Julian Day Number, using the Julian calendar before 15 Oct 1582 and the Gregorian calendar from then on
+- Flags dates in the British 1752 calendar gap (3-13 September), which never appeared on a British calendar
 - Historical weather data (from 1940 onward, per the Open-Meteo archive's coverage) for locations worldwide including:
   - Temperature
   - Precipitation
@@ -43,10 +44,15 @@ src/
     page.tsx
     layout.tsx
     DateSelector.tsx
+    DateSelector.module.css
     HistoricalDashboard.tsx
+    HistoricalDashboard.module.css
     HistoricalWeather.tsx
+    HistoricalWeather.module.css
     WeatherIcon.tsx
+    WeatherIcon.module.css
     WikipediaOnThisDay.tsx
+    WikipediaOnThisDay.module.css
     utils/
       dates.ts
 ```
@@ -111,6 +117,7 @@ https://archive-api.open-meteo.com/v1/archive
 - TypeScript
 - CSS Modules
 - Lucide React Icons
+- Bun (package manager)
 
 ## Key Components
 - **HistoricalDashboard**: Main application container
