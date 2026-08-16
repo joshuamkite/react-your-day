@@ -1,0 +1,45 @@
+.wrapper {
+  display: inline-block;
+}
+
+.relative {
+  position: relative;
+}
+
+.overlayCloud {
+  position: absolute;
+  right: -0.5rem;
+  bottom: -0.5rem;
+}
+
+.sun {
+  color: #eab308;
+}
+
+.moon {
+  color: #d1d5db;
+}
+
+.cloud {
+  color: #6b7280;
+}
+
+.cloudLight {
+  color: #9ca3af;
+}
+
+.drizzle {
+  color: #60a5fa;
+}
+
+.rain {
+  color: #3b82f6;
+}
+
+.snow {
+  color: #bfdbfe;
+}
+
+.lightning {
+  color: #facc15;
+}

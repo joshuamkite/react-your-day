@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Cloud, Loader2, Search } from 'lucide-react';
+import { Cloud, Frown, Loader2, Search } from 'lucide-react';
 import WeatherIcon from './WeatherIcon';
+import styles from './HistoricalWeather.module.css';
 
 interface WeatherData {
     temperature: number;
@@ -26,6 +27,11 @@ interface Location {
 interface HistoricalWeatherProps {
     selectedDate: Date;
 }
+
+// Open-Meteo's archive only covers 1940 onward. For anything earlier, their
+// API returns an unhelpful "Invalid date" (rather than a range error), so we
+// check client-side instead of surfacing that message.
+const WEATHER_ARCHIVE_START = new Date(Date.UTC(1940, 0, 1));
 
 const HistoricalWeather: React.FC<HistoricalWeatherProps> = ({ selectedDate }) => {
     const [location, setLocation] = useState<Location>({
@@ -84,10 +90,19 @@ const HistoricalWeather: React.FC<HistoricalWeatherProps> = ({ selectedDate }) =
     const [weather, setWeather] = useState<WeatherData | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>('');
+    const [unavailable, setUnavailable] = useState<boolean>(false);
 
     const fetchWeather = useCallback(async () => {
         setLoading(true);
         setError('');
+        setUnavailable(false);
+        setWeather(null);
+
+        if (selectedDate < WEATHER_ARCHIVE_START) {
+            setUnavailable(true);
+            setLoading(false);
+            return;
+        }
 
         try {
             const formatDate = (date: Date): string => {
@@ -104,9 +119,11 @@ const HistoricalWeather: React.FC<HistoricalWeatherProps> = ({ selectedDate }) =
                 `timezone=${timezone}`
             );
 
-            if (!response.ok) throw new Error('Failed to fetch weather data');
-
             const data = await response.json();
+
+            if (!response.ok || data.error) {
+                throw new Error(data.reason || 'Failed to fetch weather data');
+            }
 
             // Find the index for the selected hour
             const hourIndex = data.hourly.time.findIndex((time: string) =>
@@ -155,20 +172,20 @@ const HistoricalWeather: React.FC<HistoricalWeatherProps> = ({ selectedDate }) =
     };
 
     return (
-        <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
-            <div className="p-6 border-b dark:border-gray-700">
-                <h2 className="text-xl font-bold flex items-center mb-4 text-gray-900 dark:text-gray-100">
-                    <Cloud className="mr-2 h-6 w-6" />
+        <div className={styles.card}>
+            <div className={styles.header}>
+                <h2 className={styles.title}>
+                    <Cloud className={styles.titleIcon} />
                     Historical Weather
                 </h2>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <div className={styles.controlsGrid}>
+                    <div className={styles.colSpan2}>
+                        <label className={styles.fieldLabel}>
                             Location
                         </label>
-                        <div className="relative">
-                            <Search className="absolute left-2 top-2.5 h-5 w-5 text-gray-400 dark:text-gray-500" />
+                        <div className={styles.relative}>
+                            <Search className={styles.searchIcon} />
                             <select
                                 value={`${location.lat},${location.lon}`}
                                 onChange={(e) => {
@@ -176,7 +193,7 @@ const HistoricalWeather: React.FC<HistoricalWeatherProps> = ({ selectedDate }) =
                                     const selectedLocation = locations.find(loc => loc.lat === lat && loc.lon === lon);
                                     if (selectedLocation) setLocation(selectedLocation);
                                 }}
-                                className="w-full pl-9 p-2 border rounded-md appearance-none bg-white dark:bg-gray-700 dark:text-gray-300"
+                                className={`${styles.select} ${styles.locationSelect}`}
                             >
                                 {locations.map((loc) => (
                                     <option key={loc.name} value={`${loc.lat},${loc.lon}`}>
@@ -188,13 +205,13 @@ const HistoricalWeather: React.FC<HistoricalWeatherProps> = ({ selectedDate }) =
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        <label className={styles.fieldLabel}>
                             Hour
                         </label>
                         <select
                             value={selectedHour}
                             onChange={(e) => setSelectedHour(Number(e.target.value))}
-                            className="w-full p-2 border rounded-md bg-white dark:bg-gray-700 dark:text-gray-300"
+                            className={styles.select}
                         >
                             {Array.from({ length: 24 }, (_, i) => (
                                 <option key={i} value={i}>
@@ -206,68 +223,73 @@ const HistoricalWeather: React.FC<HistoricalWeatherProps> = ({ selectedDate }) =
                 </div>
             </div>
 
-            <div className="p-6">
+            <div className={styles.body}>
                 {loading ? (
-                    <div className="flex justify-center items-center h-32">
-                        <Loader2 className="h-8 w-8 animate-spin text-gray-500 dark:text-gray-400" />
+                    <div className={styles.loadingWrap}>
+                        <Loader2 className={styles.spinner} />
+                    </div>
+                ) : unavailable ? (
+                    <div className={styles.unavailableWrap}>
+                        <Frown size={64} className={styles.frownIcon} />
+                        <div>Weather data is only available from 1940 onward</div>
                     </div>
                 ) : error ? (
-                    <div className="text-red-500 dark:text-red-400 text-center p-4">{error}</div>
+                    <div className={styles.errorText}>{error}</div>
                 ) : weather ? (
-                    <div className="space-y-6">
-                        <div className="text-center">
+                    <div className={styles.contentStack}>
+                        <div className={styles.iconBlock}>
                             <WeatherIcon
                                 weathercode={weather.weathercode}
                                 isDay={weather.is_day}
                                 size={64}
                             />
-                            <span className="text-sm text-gray-500 dark:text-gray-400 block mt-2">
+                            <span className={styles.hourLabel}>
                                 {`${String(weather.hour).padStart(2, '0')}:00 - ${weather.is_day ? 'Daytime' : 'Nighttime'}`}
                             </span>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                <div className="text-sm text-gray-500 dark:text-gray-400">Temperature</div>
-                                <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{Math.round(weather.temperature)}°C</div>
+                        <div className={styles.statsGrid}>
+                            <div className={styles.tile}>
+                                <div className={styles.tileLabel}>Temperature</div>
+                                <div className={styles.tileValue}>{Math.round(weather.temperature)}°C</div>
                             </div>
-                            <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                <div className="text-sm text-gray-500 dark:text-gray-400">Feels Like</div>
-                                <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{Math.round(weather.apparent_temperature)}°C</div>
+                            <div className={styles.tile}>
+                                <div className={styles.tileLabel}>Feels Like</div>
+                                <div className={styles.tileValue}>{Math.round(weather.apparent_temperature)}°C</div>
                             </div>
-                            <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                <div className="text-sm text-gray-500 dark:text-gray-400">Precipitation</div>
-                                <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{Math.round(weather.precipitation)} mm</div>
+                            <div className={styles.tile}>
+                                <div className={styles.tileLabel}>Precipitation</div>
+                                <div className={styles.tileValue}>{Math.round(weather.precipitation)} mm</div>
                             </div>
-                            <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                <div className="text-sm text-gray-500 dark:text-gray-400">Cloud Cover</div>
-                                <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{Math.round(weather.cloud_cover)}%</div>
+                            <div className={styles.tile}>
+                                <div className={styles.tileLabel}>Cloud Cover</div>
+                                <div className={styles.tileValue}>{Math.round(weather.cloud_cover)}%</div>
                             </div>
                         </div>
 
-                        <div className="space-y-4">
-                            <h3 className="font-semibold text-gray-700 dark:text-gray-300">Wind Conditions</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                    <div className="text-sm text-gray-500 dark:text-gray-400">Wind Speed</div>
-                                    <div className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                        <div className={styles.windSection}>
+                            <h3 className={styles.windTitle}>Wind Conditions</h3>
+                            <div className={styles.windGrid}>
+                                <div className={styles.tile}>
+                                    <div className={styles.tileLabel}>Wind Speed</div>
+                                    <div className={styles.windValue}>
                                         {Math.round(weather.wind_speed)} km/h
-                                        <div className="text-sm font-normal text-gray-500 dark:text-gray-400">
+                                        <div className={styles.tileLabel}>
                                             ({Math.round(kmhToMph(weather.wind_speed))} mph)
                                         </div>
                                     </div>
                                 </div>
-                                <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                    <div className="text-sm text-gray-500 dark:text-gray-400">Wind Direction</div>
-                                    <div className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                                <div className={styles.tile}>
+                                    <div className={styles.tileLabel}>Wind Direction</div>
+                                    <div className={styles.windValue}>
                                         {getWindDirection(weather.wind_direction)}
                                     </div>
                                 </div>
-                                <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                    <div className="text-sm text-gray-500 dark:text-gray-400">Wind Gusts</div>
-                                    <div className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                                <div className={styles.tile}>
+                                    <div className={styles.tileLabel}>Wind Gusts</div>
+                                    <div className={styles.windValue}>
                                         {Math.round(weather.wind_gusts)} km/h
-                                        <div className="text-sm font-normal text-gray-500 dark:text-gray-400">
+                                        <div className={styles.tileLabel}>
                                             ({Math.round(kmhToMph(weather.wind_gusts))} mph)
                                         </div>
                                     </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import styles from './DateSelector.module.css';
 
 interface DateInputs {
     year: string;
@@ -20,12 +21,20 @@ const DateSelector: React.FC<DateSelectorProps> = ({ dateInputs, onDatePartChang
         'July', 'August', 'September', 'October', 'November', 'December'
     ];
 
+    // Days per month (index 0 = January). Native Date can't be used here:
+    // its constructor silently remaps two-digit years (0-99) to 1900+year,
+    // which would give the wrong day count for any year below 100.
+    const DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    const isLeapYear = (year: number): boolean =>
+        (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+
     // Get days in selected month
     const getDaysInMonth = (month: string, year: string): number => {
         if (!month || !year) return 31;
         const monthIndex = parseInt(month) - 1;
         const yearNum = parseInt(year);
-        return new Date(yearNum, monthIndex + 1, 0).getDate();
+        if (monthIndex === 1 && isLeapYear(yearNum)) return 29;
+        return DAYS_IN_MONTH[monthIndex];
     };
 
     const daysInMonth = getDaysInMonth(dateInputs.month, dateInputs.year);
@@ -55,8 +64,8 @@ const DateSelector: React.FC<DateSelectorProps> = ({ dateInputs, onDatePartChang
                 const currentYear = new Date().getFullYear();
 
                 // If it's an invalid year, show error message
-                if (yearNum < 1754) {
-                    setYearError('Year must be 1754 or later');
+                if (yearNum < 1) {
+                    setYearError('Year must be 1 or later');
                     onDatePartChange('year', '');
                 } else if (yearNum > currentYear) {
                     setYearError(`Year cannot be later than ${currentYear}`);
@@ -66,15 +75,13 @@ const DateSelector: React.FC<DateSelectorProps> = ({ dateInputs, onDatePartChang
         }
     };
 
-    const inputClasses = "w-full px-3 py-2 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-white dark:focus:ring-blue-400 dark:placeholder-gray-400";
-
     return (
-        <div className="space-y-2">
-            <div className="flex gap-2 justify-center">
+        <div className={styles.container}>
+            <div className={styles.row}>
                 <select
                     value={dateInputs.day}
                     onChange={(e) => onDatePartChange('day', e.target.value)}
-                    className={`${inputClasses} w-24`}
+                    className={`${styles.input} ${styles.day}`}
                 >
                     <option value="">Day</option>
                     {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(day => (
@@ -87,7 +94,7 @@ const DateSelector: React.FC<DateSelectorProps> = ({ dateInputs, onDatePartChang
                 <select
                     value={dateInputs.month}
                     onChange={(e) => onDatePartChange('month', e.target.value)}
-                    className={`${inputClasses} w-40`}
+                    className={`${styles.input} ${styles.month}`}
                 >
                     <option value="">Month</option>
                     {months.map((month, index) => (
@@ -105,11 +112,11 @@ const DateSelector: React.FC<DateSelectorProps> = ({ dateInputs, onDatePartChang
                     placeholder="Year"
                     value={dateInputs.year}
                     onChange={handleYearChange}
-                    className={`${inputClasses} w-28`}
+                    className={`${styles.input} ${styles.year}`}
                 />
             </div>
             {yearError && (
-                <div className="text-red-500 dark:text-red-400 text-sm text-center">
+                <div className={styles.error}>
                     {yearError}
                 </div>
             )}
