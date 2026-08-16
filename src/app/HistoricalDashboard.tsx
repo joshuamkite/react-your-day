@@ -4,8 +4,9 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import WikipediaOnThisDay from './WikipediaOnThisDay';
 import HistoricalWeather from './HistoricalWeather';
-import { getWeekday } from '@/utils/dates';
+import { getWeekday, isInBritishCalendarGap } from '@/utils/dates';
 import { Home } from 'lucide-react';
+import styles from './HistoricalDashboard.module.css';
 
 // Import DateSelector with SSR disabled
 const DateSelector = dynamic(() => import('./DateSelector'), { ssr: false });
@@ -38,12 +39,16 @@ const HistoricalDashboard: React.FC = () => {
         setDateInputs(newInputs);
 
         if (newInputs.year && newInputs.month && newInputs.day) {
+            // Build with a placeholder (leap) year first, then set the real
+            // year via setUTCFullYear - Date.UTC() itself remaps two-digit
+            // years (0-99) to 1900+year, which would corrupt any year < 100.
             const newDate = new Date(Date.UTC(
-                parseInt(newInputs.year),
+                2000,
                 parseInt(newInputs.month) - 1,
                 parseInt(newInputs.day),
                 12, 0, 0, 0
             ));
+            newDate.setUTCFullYear(parseInt(newInputs.year));
 
             if (!isNaN(newDate.getTime())) {
                 setSelectedDate(newDate);
@@ -52,29 +57,29 @@ const HistoricalDashboard: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 text-gray-900 dark:text-gray-100">
-            <div className="max-w-6xl mx-auto px-4">
-                <div className="mb-8 text-center">
-                    <a href="https://www.joshuakite.co.uk" className="flex items-center justify-center mb-2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">
-                        <Home className="h-5 w-5 mr-1" />
+        <div className={styles.page}>
+            <div className={styles.container}>
+                <div className={styles.header}>
+                    <a href="https://www.joshuakite.co.uk" className={styles.homeLink}>
+                        <Home className={styles.homeIcon} />
                         Return to Site Home
                     </a>
-                    <h1 className="text-3xl font-bold flex items-center justify-center mb-4">
-                        <DynamicCalendar className="mr-2 h-8 w-8" />
+                    <h1 className={styles.title}>
+                        <DynamicCalendar className={styles.titleIcon} />
                         Historical Date Info
                     </h1>
 
-                    <div className="text-gray-600 dark:text-gray-300 mb-6 max-w-2xl mx-auto">
-                        <p className="mb-3">Explore historical weather data and significant events for any date since 1754.</p>
-                        <ul className="list-disc list-inside space-y-2">
-                            <li>Weekday calculated using Zeller&apos;s congruence</li>
-                            <li>Historical weather provided by <a href="https://open-meteo.com/" className="text-blue-500 hover:underline dark:text-blue-400">Open Meteo</a></li>
-                            <li>Historical events provided by <a href="https://wikimedia.org/" className="text-blue-500 hover:underline dark:text-blue-400">Wikimedia</a></li>
+                    <div className={styles.description}>
+                        <p>Explore historical weather data and significant events for any date.</p>
+                        <ul className={styles.list}>
+                            <li>Weekday calculated using the Julian calendar before 15 Oct 1582 and the Gregorian calendar from then on</li>
+                            <li>Historical weather provided by <a href="https://open-meteo.com/" className={styles.link}>Open Meteo</a> (available from 1940 onward)</li>
+                            <li>Historical events provided by <a href="https://wikimedia.org/" className={styles.link}>Wikimedia</a></li>
                         </ul>
                     </div>
 
-                    <div className="max-w-sm mx-auto mb-6">
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <div className={styles.dateSelectorWrapper}>
+                        <label className={styles.label}>
                         </label>
                         <DateSelector
                             dateInputs={dateInputs}
@@ -83,7 +88,7 @@ const HistoricalDashboard: React.FC = () => {
                     </div>
 
                     {selectedDate && (
-                        <div className="text-xl font-medium text-gray-600 dark:text-gray-300">
+                        <div className={styles.weekday}>
                             {selectedDate.toLocaleDateString('en-US', {
                                 month: 'long',
                                 day: 'numeric',
@@ -92,15 +97,21 @@ const HistoricalDashboard: React.FC = () => {
                             })} - {getWeekday(selectedDate)}
                         </div>
                     )}
+
+                    {selectedDate && isInBritishCalendarGap(selectedDate) && (
+                        <div className={styles.calendarNote}>
+                            This date never appeared on a British calendar &mdash; 11 days were dropped when Great Britain switched from the Julian to the Gregorian calendar in 1752 (2 September was followed directly by 14 September).
+                        </div>
+                    )}
                 </div>
 
                 {selectedDate ? (
-                    <div className="grid gap-8 grid-cols-1 lg:grid-cols-2">
+                    <div className={styles.resultsGrid}>
                         <HistoricalWeather selectedDate={selectedDate} />
                         <WikipediaOnThisDay selectedDate={selectedDate} />
                     </div>
                 ) : (
-                    <div className="text-center text-gray-500 dark:text-gray-400 py-12">
+                    <div className={styles.emptyState}>
                         Select a date to begin your journey through time.
                     </div>
                 )}

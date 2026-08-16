@@ -1,12 +1,12 @@
 # React Your Day
 
-A React application that shows historical weather data, weekday and significant events for any date since 1754. Built with Next.js and designed for static site integration.
+A React application that shows historical weather data, weekday and significant events for any date. Built with Next.js and designed for static site integration.
 
 ## Features
 
-- Date selection from 1754 to present
-- Day of week calculation using Zeller's congruence
-- Historical weather data for locations worldwide including:
+- Date selection for any year
+- Day of week calculation via Julian Day Number, using the Julian calendar before 15 Oct 1582 and the Gregorian calendar from then on
+- Historical weather data (from 1940 onward, per the Open-Meteo archive's coverage) for locations worldwide including:
   - Temperature
   - Precipitation
   - Cloud cover
@@ -26,14 +26,14 @@ npx create-next-app@latest .
 Select the following options:
 - TypeScript: Yes
 - ESLint: Yes
-- Tailwind CSS: Yes
+- Tailwind CSS: No (styling uses CSS Modules instead)
 - src/ directory: Yes
 - App Router: Yes
 - Import alias: Yes (@/ for src/)
 
 2. Install required dependencies:
 ```bash
-npm install lucide-react
+bun add lucide-react
 ```
 
 3. Create the following file structure:
@@ -57,7 +57,7 @@ Review `next.config.ts` to build for local development
 
 1. Run the development server:
 ```bash
-npm run dev
+bun run dev
 ```
 The app will be available at http://localhost:3000
 
@@ -75,7 +75,7 @@ const nextConfig = {
 
 Build the static output:
 ```bash
-npm run build
+bun run build
 ```
 
 The static files are generated in the `out` directory.
@@ -90,7 +90,7 @@ tofu init
 tofu apply
 ```
 
-`tofu apply` builds the app (`npm install && npm run build`), syncs `out/` to S3, and invalidates the CloudFront distribution. Backend state config and domain/zone variables are supplied via a local `terraform.tfvars` (gitignored, not committed since this repo is public).
+`tofu apply` builds the app (`bun install && bun run build`), syncs `out/` to S3, and invalidates the CloudFront distribution. Backend state config and domain/zone variables are supplied via a local `terraform.tfvars` (gitignored, not committed since this repo is public).
 
 ## APIs Used
 The app integrates with two external APIs:
@@ -106,10 +106,10 @@ https://archive-api.open-meteo.com/v1/archive
 ```
 
 ## Technologies Used
-- Next.js 14
+- Next.js 16
 - React
 - TypeScript
-- Tailwind CSS
+- CSS Modules
 - Lucide React Icons
 
 ## Key Components

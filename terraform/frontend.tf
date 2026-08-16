@@ -46,7 +46,7 @@ resource "null_resource" "build_frontend" {
 
   provisioner "local-exec" {
     working_dir = "${path.module}/.."
-    command     = "rm -rf node_modules out && npm install && npm run build"
+    command     = "rm -rf node_modules out && bun install && bun run build"
   }
 }
 

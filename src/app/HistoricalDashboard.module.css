@@ -1,0 +1,183 @@
+.page {
+  min-height: 100vh;
+  background-color: #f9fafb;
+  color: #111827;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .page {
+    background-color: #111827;
+    color: #f3f4f6;
+  }
+}
+
+.container {
+  max-width: 72rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.homeLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+  color: #4b5563;
+}
+
+.homeLink:hover {
+  color: #111827;
+}
+
+@media (prefers-color-scheme: dark) {
+  .homeLink {
+    color: #d1d5db;
+  }
+
+  .homeLink:hover {
+    color: #ffffff;
+  }
+}
+
+.homeIcon {
+  height: 1.25rem;
+  width: 1.25rem;
+  margin-right: 0.25rem;
+}
+
+.title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.titleIcon {
+  margin-right: 0.5rem;
+  height: 2rem;
+  width: 2rem;
+}
+
+.label {
+  display: block;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .label {
+    color: #d1d5db;
+  }
+}
+
+.description {
+  color: #4b5563;
+  margin-bottom: 1.5rem;
+  max-width: 42rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (prefers-color-scheme: dark) {
+  .description {
+    color: #d1d5db;
+  }
+}
+
+.description p {
+  margin-bottom: 0.75rem;
+}
+
+.list {
+  list-style-type: disc;
+  list-style-position: inside;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.link {
+  color: #3b82f6;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+@media (prefers-color-scheme: dark) {
+  .link {
+    color: #60a5fa;
+  }
+}
+
+.dateSelectorWrapper {
+  max-width: 24rem;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 1.5rem;
+}
+
+.weekday {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #4b5563;
+}
+
+@media (prefers-color-scheme: dark) {
+  .weekday {
+    color: #d1d5db;
+  }
+}
+
+.calendarNote {
+  font-size: 1rem;
+  color: #6b7280;
+  margin-top: 0.5rem;
+  max-width: 28rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (prefers-color-scheme: dark) {
+  .calendarNote {
+    color: #9ca3af;
+  }
+}
+
+.resultsGrid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 1024px) {
+  .resultsGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.emptyState {
+  text-align: center;
+  color: #6b7280;
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .emptyState {
+    color: #9ca3af;
+  }
+}

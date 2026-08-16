@@ -1,0 +1,66 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.row {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+.input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px #3b82f6;
+}
+
+@media (prefers-color-scheme: dark) {
+  .input {
+    background-color: #1f2937;
+    border-color: #374151;
+    color: #ffffff;
+  }
+
+  .input:focus {
+    box-shadow: 0 0 0 2px #60a5fa;
+  }
+
+  .input::placeholder {
+    color: #9ca3af;
+  }
+}
+
+.day {
+  width: 6rem;
+}
+
+.month {
+  width: 10rem;
+}
+
+.year {
+  width: 7rem;
+}
+
+.error {
+  color: #ef4444;
+  font-size: 1rem;
+  text-align: center;
+}
+
+@media (prefers-color-scheme: dark) {
+  .error {
+    color: #f87171;
+  }
+}
