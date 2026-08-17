@@ -2,6 +2,10 @@
 
 A React application that shows historical weather data, weekday and significant events for any date. Built with Next.js and designed for static site integration.
 
+## Screenshots
+
+![React Your Day](screenshots/react-your-day.png)
+
 ## Features
 
 - Date selection for any year
