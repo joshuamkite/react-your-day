@@ -145,6 +145,9 @@ const HistoricalDashboard: React.FC = () => {
           <a href="https://joshuakite.co.uk/web-applications.html">
             &copy; joshuakite.co.uk
           </a>
+          <a href="https://github.com/joshuamkite/react-your-day">
+            View source
+          </a>
         </footer>
       </div>
     </div>
