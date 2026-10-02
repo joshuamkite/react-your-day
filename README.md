@@ -2,6 +2,15 @@
 
 A React application that shows historical weather data, weekday and significant events for any date. Built with Next.js and designed for static site integration.
 
+![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=flat&logo=nextdotjs&logoColor=white)
+![React](https://img.shields.io/badge/React-19-61DAFB?style=flat&logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-7-3178C6?style=flat&logo=typescript&logoColor=white)
+![Bun](https://img.shields.io/badge/Bun-1.4-000000?style=flat&logo=bun&logoColor=white)
+![Biome](https://img.shields.io/badge/Biome-2-60A5FA?style=flat&logo=biome&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest-5-6E9F18?style=flat&logo=vitest&logoColor=white)
+![OpenTofu](https://img.shields.io/badge/OpenTofu-1.10+-FFDA18?style=flat&logo=opentofu&logoColor=black)
+![AWS CloudFront](https://img.shields.io/badge/AWS-CloudFront-FF9900?style=flat&logo=amazoncloudfront&logoColor=white)
+
 ## Screenshots
 
 ![React Your Day](screenshots/react-your-day.png)
@@ -20,45 +29,16 @@ A React application that shows historical weather data, weekday and significant 
 - Links to full Wikipedia articles
 - Responsive design for all screen sizes
 - Static site integration ready
+- Footer link back to joshuakite.co.uk
 
+## Setup
 
-## Setup Steps
+Requires [Bun](https://bun.sh).
 
-1. Create Next.js project:
 ```bash
-npx create-next-app@latest .
-```
-Select the following options:
-- TypeScript: Yes
-- ESLint: Yes
-- Tailwind CSS: No (styling uses CSS Modules instead)
-- src/ directory: Yes
-- App Router: Yes
-- Import alias: Yes (@/ for src/)
-
-2. Install required dependencies:
-```bash
-bun add lucide-react
-```
-
-3. Create the following file structure:
-```
-src/
-  app/
-    page.tsx
-    layout.tsx
-    DateSelector.tsx
-    DateSelector.module.css
-    HistoricalDashboard.tsx
-    HistoricalDashboard.module.css
-    HistoricalWeather.tsx
-    HistoricalWeather.module.css
-    WeatherIcon.tsx
-    WeatherIcon.module.css
-    WikipediaOnThisDay.tsx
-    WikipediaOnThisDay.module.css
-    utils/
-      dates.ts
+git clone https://github.com/joshuamkite/react-your-day.git
+cd react-your-day
+bun install
 ```
 
 ## Development
@@ -71,24 +51,13 @@ bun run dev
 ```
 The app will be available at http://localhost:3000
 
-## Building for Production
-
-`next.config.ts` is already set to static export:
-```typescript
-const nextConfig = {
-  output: 'export',
-  images: {
-    unoptimized: true,
-  },
-};
-```
-
-Build the static output:
+2. Lint, format and test:
 ```bash
-bun run build
+bun run lint     # Biome lint
+bun run check    # Biome lint + format + import ordering (no writes)
+bun run format   # Biome format --write
+bun run test     # Vitest (unit tests for src/utils/dates.ts)
 ```
-
-The static files are generated in the `out` directory.
 
 ## Deployment
 
@@ -114,14 +83,6 @@ https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/events/{month}/{day}
 ```
 https://archive-api.open-meteo.com/v1/archive
 ```
-
-## Technologies Used
-- Next.js 16
-- React
-- TypeScript
-- CSS Modules
-- Lucide React Icons
-- Bun (package manager)
 
 ## Key Components
 - **HistoricalDashboard**: Main application container
