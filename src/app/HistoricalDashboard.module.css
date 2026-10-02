@@ -181,3 +181,28 @@
     color: #9ca3af;
   }
 }
+
+.footer {
+  margin-top: 3rem;
+  padding-bottom: 1.5rem;
+  text-align: center;
+  font-size: 0.875rem;
+}
+
+.footer a {
+  color: #4b5563;
+}
+
+.footer a:hover {
+  color: #111827;
+}
+
+@media (prefers-color-scheme: dark) {
+  .footer a {
+    color: #d1d5db;
+  }
+
+  .footer a:hover {
+    color: #ffffff;
+  }
+}
